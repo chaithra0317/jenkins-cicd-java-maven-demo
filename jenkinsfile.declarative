@@ -11,6 +11,11 @@ pipeline {
                 sh '"mvn" -Dmaven.test.failure.ignore clean install'
           }
          }
+         stage('SonarQube Analysis') {
+                withSonarQubeEnv(sonar) {
+                sh "${mvn}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=demo-sonar"
+                }
+         }
          stage('Deploy') {
           steps {
                 deploy adapters: [tomcat9(credentialsId: 'tomcat-server', path: '', url: 'http://13.232.252.5:8080/')], contextPath: null, war: '**/*.war'
